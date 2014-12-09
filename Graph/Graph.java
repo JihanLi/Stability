@@ -457,7 +457,7 @@ public class Graph {
 	{
 		for(LJEdge e1 : graph.edgeSet())
 		{
-			System.out.println(e1);
+//			System.out.println(e1);
 			for(String v1 : graph.vertexSet())
 			{
 				String v2 = graph.getEdgeSource(e1);

@@ -74,11 +74,15 @@ public class Main {
 		Graph g = new Graph();
 		g.ReadGraph(filename, true);
 		g.findTriangles();
+		
+		System.out.println("All triangles: ");
 		for(Triangle tri : g.all_triangles)
 		{
 			System.out.println(tri);
 		}
+		System.out.println();
 		
+		System.out.println("All edges and triangles they belong to: ");
 		for(LJEdge e : g.graph.edgeSet())
 		{
 			System.out.println(e+" belongs to:");
