@@ -74,7 +74,8 @@ public class Main {
 		Graph g = new Graph();
 		g.ReadGraph(filename, true);
 		g.findTriangles();
-		
+		g.exportTriangles();
+		g.importTriangles();
 		System.out.println("All triangles: ");
 		for(Triangle tri : g.all_triangles)
 		{

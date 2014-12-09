@@ -3,8 +3,11 @@ package Graph;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -455,6 +458,7 @@ public class Graph {
 	
 	public void findTriangles()
 	{
+		int tri_index=0;
 		for(LJEdge e1 : graph.edgeSet())
 		{
 //			System.out.println(e1);
@@ -470,8 +474,9 @@ public class Graph {
 				{
 					if (e1.getIndex()<e2.getIndex() && e1.getIndex()<e3.getIndex())
 					{
-						Triangle new_tri = new Triangle(e1, e2, e3);
+						Triangle new_tri = new Triangle(e1, e2, e3, tri_index);
 						this.all_triangles.add(new_tri);
+						tri_index++;
 						e1.getTriangles().add(new_tri);
 						e2.getTriangles().add(new_tri);
 						e3.getTriangles().add(new_tri);
@@ -480,6 +485,95 @@ public class Graph {
 				
 			}
 		}
+	}
+	
+	public void exportTriangles() throws IOException
+	{
+		File tri_data = new File("triangle_data.txt");
+		File edge2tri_data = new File("edge2tri_data.txt");
+		PrintWriter tri_output = new PrintWriter(new FileWriter(tri_data,false));
+		PrintWriter edge2tri_output = new PrintWriter(new FileWriter(edge2tri_data,false));
+		
+		for(Triangle tri : this.all_triangles)
+		{
+			LJEdge e1 = tri.getEdge1();
+			LJEdge e2 = tri.getEdge2();
+			LJEdge e3 = tri.getEdge3();
+			tri_output.print(e1.toString()+"#"+e2.toString()+"#"+e3.toString()+"\n");
+			tri_output.flush();
+		}
+		for(LJEdge e : graph.edgeSet())
+		{
+			edge2tri_output.print(e.toString()+"#");
+			for(Triangle tri1 : e.getTriangles())
+				edge2tri_output.print(Integer.toString(tri1.index)+"#");
+			edge2tri_output.print("\n");
+		}
+		
+		tri_output.close();
+		edge2tri_output.close();
+	}
+	
+	public void importTriangles() throws IOException
+	{
+		File tri_data = new File("triangle_data.txt");
+		File edge2tri_data = new File("edge2tri_data.txt");
+        BufferedReader tri_br = new BufferedReader(new InputStreamReader(new FileInputStream(tri_data)));
+        BufferedReader edge2tri_br = new BufferedReader(new InputStreamReader(new FileInputStream(edge2tri_data)));
+        
+        // import tri
+        String line = "";
+        int tri_index = 0;
+        while((line = tri_br.readLine()) != null)
+		{
+        	LJEdge e1 = new LJEdge();
+        	LJEdge e2 = new LJEdge();
+        	LJEdge e3 = new LJEdge();
+        	String[] edges = line.split("#");
+        	
+        	String e1_str = edges[0];
+    		String[] nodes = e1_str.split(" : ");
+    		String node1 = nodes[0].substring(1);
+    		String node2 = nodes[1].substring(0, nodes[1].length()-1);
+    		e1 = graph.getEdge(node1, node2);
+    		
+    		String e2_str = edges[1];
+    		nodes = e2_str.split(" : ");
+    		node1 = nodes[0].substring(1);
+    		node2 = nodes[1].substring(0, nodes[1].length()-1);
+    		e2 = graph.getEdge(node1, node2);
+    		
+    		String e3_str = edges[2];
+    		nodes = e3_str.split(" : ");
+    		node1 = nodes[0].substring(1);
+    		node2 = nodes[1].substring(0, nodes[1].length()-1);
+    		e3 = graph.getEdge(node1, node2);
+    		
+    		Triangle new_tri = new Triangle(e1, e2, e3, tri_index);
+			this.all_triangles.add(new_tri);
+			tri_index++;
+		}
+        
+        // import edge2tri
+        line = "";
+        while((line = edge2tri_br.readLine()) != null)
+		{
+        	String[] items = line.split("#");
+        	String edge_str = items[0];
+        	String[] nodes = edge_str.split(" : ");
+    		String node1 = nodes[0].substring(1);
+    		String node2 = nodes[1].substring(0, nodes[1].length()-1);
+    		LJEdge e = graph.getEdge(node1, node2);
+    		for(int i=1; i<items.length; i++)
+    		{
+    			int curr_tri_index = Integer.parseInt(items[i]);
+    			Triangle curr_tri = this.all_triangles.get(curr_tri_index);
+    			e.getTriangles().add(curr_tri);
+    		}
+		}
+        
+        tri_br.close();
+        edge2tri_br.close();
 	}
 	
 	public void stabilize()

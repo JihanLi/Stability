@@ -9,12 +9,14 @@ public class Triangle
 	private LJEdge edge2;
 	private LJEdge edge3;
 	private int negNum;
+	public int index;
 	
-	public Triangle(LJEdge edge1, LJEdge edge2, LJEdge edge3) {
+	public Triangle(LJEdge edge1, LJEdge edge2, LJEdge edge3, int index) {
 		super();
 		this.edge1 = edge1;
 		this.edge2 = edge2;
 		this.edge3 = edge3;
+		this.index = index;
 		calNegNum();  // calculate the number of negative edges
 	}
 	@Override
