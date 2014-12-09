@@ -11,9 +11,9 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 public class Main {
 
 	//The main function running the algorithm.
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws Exception
 	{
-		new Main().main3();
+		new Main().main4();
 				
 	}
 	
@@ -68,7 +68,7 @@ public class Main {
 		}
 	}
 	
-	public void main3() throws IOException
+	public void main3() throws IOException  // test triangles
 	{
 		String filename = "test_graph.txt";
 		Graph g = new Graph();
@@ -93,4 +93,17 @@ public class Main {
 			}
 		}
 	}
+	
+	public void main4() throws Exception  // test graphDiff
+	{
+		String filename1 = "test_graph.txt";
+		Graph g1 = new Graph();
+		g1.ReadGraph(filename1, false);
+		String filename2 = "test_graph2.txt";
+		Graph g2 = new Graph();
+		g2.ReadGraph(filename2, false);
+		System.out.print("The average difference between g1 and g2 is: ");
+		System.out.println(Graph.graphDiff(g1, g2));
+	}
+		
 }

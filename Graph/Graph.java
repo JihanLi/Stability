@@ -576,6 +576,36 @@ public class Graph {
         edge2tri_br.close();
 	}
 	
+	// calculate the average difference of each pair of edges in g1 and g2
+	public static double graphDiff(Graph g1, Graph g2) throws Exception 
+	{
+		double diff = 0;
+		
+		if(g1.graph.edgeSet().size()!=g2.graph.edgeSet().size() ||
+				g1.graph.vertexSet().size()!=g2.graph.vertexSet().size())
+		{
+			System.out.println(g1.graph.edgeSet().size());
+			System.out.println(g2.graph.edgeSet().size());
+			System.out.println(g1.graph.vertexSet().size());
+			System.out.println(g2.graph.vertexSet().size());
+			throw new Exception("ERROR: two graphs have different structure!");
+		}
+		
+		int edgeNum = g1.graph.edgeSet().size();
+		
+		for(LJEdge e1 : g1.graph.edgeSet())
+		{
+			String node1 = g1.graph.getEdgeSource(e1);
+			String node2 = g1.graph.getEdgeTarget(e1);
+			LJEdge e2 = g2.graph.getEdge(node1, node2);
+			if(e2==null)
+				throw new Exception("ERROR: g2 does not contain "+e1.toString());
+			diff += Math.abs(e1.getWeight()-e2.getWeight());
+		}
+		
+		return diff/edgeNum;
+	}
+	
 	public void stabilize()
 	{
 		
