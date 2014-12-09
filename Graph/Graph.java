@@ -11,15 +11,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 
-import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 public class Graph {
 	
-	private SimpleWeightedGraph<String, DefaultWeightedEdge>  graph = new SimpleWeightedGraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
+	public SimpleWeightedGraph<String, LJEdge>  graph = new SimpleWeightedGraph<String, LJEdge>(LJEdge.class); 
 	private HashSet<String> VertexSet1 = new HashSet<String>();
 	private HashSet<String> VertexSet2 = new HashSet<String>();
 	private ArrayList<HashSet<String>> nodeSets = new ArrayList<HashSet<String>>();
+	public ArrayList<Triangle> all_triangles = new ArrayList<Triangle>();
 	
 	public static void main(String[] args)
 	{
@@ -39,28 +39,32 @@ public class Graph {
 		}
         BufferedReader br = new BufferedReader(reader);
         String line = "";
+        int curr_index = 0;
         
         if(training == true)
         {
-	        try {
-					while((line = br.readLine()) != null)
-					{
-						String[] nodes= line.split(" ");
-						if(nodes.length < 2)
-							continue;
-						if(!graph.containsVertex(nodes[0]))
-		       		 	{
-		       			 	graph.addVertex(nodes[0]);
-		       		 	}
-		       		 	if(!graph.containsVertex(nodes[1]))
-		       		 	{
-		       		 		graph.addVertex(nodes[1]);
-		       		 	}
-		       		 	if(!graph.containsEdge(nodes[0], nodes[1]) && !(nodes[0].equals(nodes[1])))
-		       		 	{
-		       		 		graph.addEdge(nodes[0], nodes[1]);
-		       		 	}				
-					}
+	        try
+	        {
+				while((line = br.readLine()) != null)
+				{
+					String[] nodes= line.split(" ");
+					if(nodes.length < 2)
+						continue;
+					if(!graph.containsVertex(nodes[0]))
+	       		 	{
+	       			 	graph.addVertex(nodes[0]);
+	       		 	}
+	       		 	if(!graph.containsVertex(nodes[1]))
+	       		 	{
+	       		 		graph.addVertex(nodes[1]);
+	       		 	}
+	       		 	if(!graph.containsEdge(nodes[0], nodes[1]) && !(nodes[0].equals(nodes[1])))
+	       		 	{
+	       		 		LJEdge new_edge = new LJEdge(curr_index);
+	       		 		curr_index++;
+	       		 		graph.addEdge(nodes[0], nodes[1], new_edge);
+	       		 	}				
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}        	
@@ -95,12 +99,12 @@ public class Graph {
         br.close();
 	}	
 	
-	public SimpleWeightedGraph<String, DefaultWeightedEdge> getGraph()
+	public SimpleWeightedGraph<String, LJEdge> getGraph()
 	{
 		return graph;
 	}
 	
-	public void setGraph(SimpleWeightedGraph<String, DefaultWeightedEdge> g)
+	public void setGraph(SimpleWeightedGraph<String, LJEdge> g)
 	{
 		this.graph = g;
 	}
@@ -110,7 +114,7 @@ public class Graph {
 		Random rand = new Random();
 		if(ratio == 1)  // if is all pos
 		{
-			for(DefaultWeightedEdge e : graph.edgeSet())
+			for(LJEdge e : graph.edgeSet())
 			{
 				double weight = rand.nextGaussian()/6+0.5;
 				while(weight <= 0 || weight > 1)
@@ -144,7 +148,7 @@ public class Graph {
 			
 		}
 		
-		for(DefaultWeightedEdge e : graph.edgeSet())
+		for(LJEdge e : graph.edgeSet())
 		{
 			String v1 = graph.getEdgeSource(e);
 			String v2 = graph.getEdgeTarget(e);
@@ -154,7 +158,7 @@ public class Graph {
 				double weight;
 				double pos = 0;
 				double neg = 0;
-				for(DefaultWeightedEdge ev1 : graph.edgesOf(v1))  // edges of v1
+				for(LJEdge ev1 : graph.edgesOf(v1))  // edges of v1
 				{
 					String source = graph.getEdgeSource(ev1);  // neighbor of v1
 					if(source.equals(v1))
@@ -168,7 +172,7 @@ public class Graph {
 					else
 						neg++;
 				}
-				for(DefaultWeightedEdge ev2 : graph.edgesOf(v2))
+				for(LJEdge ev2 : graph.edgesOf(v2))
 				{
 					String source = graph.getEdgeSource(ev2);
 					if(source.equals(v1))
@@ -191,7 +195,7 @@ public class Graph {
 				double weight;
 				double pos = 0;
 				double neg = 0;
-				for(DefaultWeightedEdge ev1 : graph.edgesOf(v1))
+				for(LJEdge ev1 : graph.edgesOf(v1))
 				{
 					String source = graph.getEdgeSource(ev1);
 					if(source.equals(v1))
@@ -205,7 +209,7 @@ public class Graph {
 					else
 						neg++;
 				}
-				for(DefaultWeightedEdge ev2 : graph.edgesOf(v2))
+				for(LJEdge ev2 : graph.edgesOf(v2))
 				{
 					String source = graph.getEdgeSource(ev2);
 					if(source.equals(v2))
@@ -228,7 +232,7 @@ public class Graph {
 				double weight;
 				double pos = 0;
 				double neg = 0;
-				for(DefaultWeightedEdge ev1 : graph.edgesOf(v1))
+				for(LJEdge ev1 : graph.edgesOf(v1))
 				{
 					String source = graph.getEdgeSource(ev1);
 					if(source.equals(v1))
@@ -242,7 +246,7 @@ public class Graph {
 					else
 						neg++;
 				}
-				for(DefaultWeightedEdge ev2 : graph.edgesOf(v2))
+				for(LJEdge ev2 : graph.edgesOf(v2))
 				{
 					String source = graph.getEdgeSource(ev2);
 					if(source.equals(v2))
@@ -265,7 +269,7 @@ public class Graph {
 				double weight;
 				double pos = 0;
 				double neg = 0;
-				for(DefaultWeightedEdge ev1 : graph.edgesOf(v1))
+				for(LJEdge ev1 : graph.edgesOf(v1))
 				{
 					String source = graph.getEdgeSource(ev1);
 					if(source.equals(v1))
@@ -279,7 +283,7 @@ public class Graph {
 					else
 						neg++;
 				}
-				for(DefaultWeightedEdge ev2 : graph.edgesOf(v2))
+				for(LJEdge ev2 : graph.edgesOf(v2))
 				{
 					String source = graph.getEdgeSource(ev2);
 					if(source.equals(v2))
@@ -306,7 +310,7 @@ public class Graph {
 		Random rand = new Random();
 		if(n == 1)  // if is all pos
 		{
-			for(DefaultWeightedEdge e : graph.edgeSet())
+			for(LJEdge e : graph.edgeSet())
 			{
 				double weight = rand.nextGaussian()/6+0.5;
 				while(weight <= 0 || weight > 1)
@@ -335,15 +339,17 @@ public class Graph {
 			ArrayList<String> allnodes = new ArrayList<String>();
 			HashMap<String, Integer> node2set = new HashMap<String, Integer>();
 			
-			// arrage num of nodes for each set
-			for(int i=half; i>=(-1)*half; i--)
-				node_num.add(i*delta+avg_num);
-			int tmp = node_num.get(0);
-			node_num.set(0, tmp+rest);
-			node_num.add(huge1);
-			node_num.add(huge2);
-//			for(int e:node_num)
-//				System.out.println(e);
+// 			// arrage num of nodes for each set
+// 			for(int i=half; i>=(-1)*half; i--)
+// 				node_num.add(i*delta+avg_num);
+// 			int tmp = node_num.get(0);
+// 			node_num.set(0, tmp+rest);
+// 			node_num.add(huge1);
+// 			node_num.add(huge2);
+// //			for(int e:node_num)
+// //				System.out.println(e);
+			
+			
 			
 			// shuffle the nodes
 			for(String node:graph.vertexSet())
@@ -371,7 +377,7 @@ public class Graph {
 //				System.out.println(set.size());
 //			}
 			int pos_count = 0;
-			for(DefaultWeightedEdge e : graph.edgeSet())
+			for(LJEdge e : graph.edgeSet())
 			{
 				String v1 = graph.getEdgeSource(e);
 				String v2 = graph.getEdgeTarget(e);
@@ -383,7 +389,7 @@ public class Graph {
 					double weight;
 					double pos = 0;
 					double neg = 0;
-					for(DefaultWeightedEdge ev1 : graph.edgesOf(v1))  // edges of v1
+					for(LJEdge ev1 : graph.edgesOf(v1))  // edges of v1
 					{
 						String source = graph.getEdgeSource(ev1);  // neighbor of v1
 						if(source.equals(v1))
@@ -393,7 +399,7 @@ public class Graph {
 						else
 							neg++;
 					}
-					for(DefaultWeightedEdge ev2 : graph.edgesOf(v2))  // edges of v2
+					for(LJEdge ev2 : graph.edgesOf(v2))  // edges of v2
 					{
 						String source = graph.getEdgeSource(ev2);  // neighbor of v2
 						if(source.equals(v2))
@@ -412,7 +418,7 @@ public class Graph {
 					double weight;
 					double pos = 0;
 					double neg = 0;
-					for(DefaultWeightedEdge ev1 : graph.edgesOf(v1))
+					for(LJEdge ev1 : graph.edgesOf(v1))
 					{
 						String source = graph.getEdgeSource(ev1);
 						if(source.equals(v1))
@@ -424,7 +430,7 @@ public class Graph {
 						else
 							neg++;
 					}
-					for(DefaultWeightedEdge ev2 : graph.edgesOf(v2))
+					for(LJEdge ev2 : graph.edgesOf(v2))
 					{
 						String source = graph.getEdgeSource(ev2);
 						if(source.equals(v2))
@@ -444,6 +450,35 @@ public class Graph {
 				}
 			}
 			System.out.println(pos_count);
+		}
+	}
+	
+	public void findTriangles()
+	{
+		for(LJEdge e1 : graph.edgeSet())
+		{
+			System.out.println(e1);
+			for(String v1 : graph.vertexSet())
+			{
+				String v2 = graph.getEdgeSource(e1);
+				String v3 = graph.getEdgeTarget(e1);
+//				if(v2.equals(v1))
+//					v2 = graph.getEdgeTarget(e1);
+				LJEdge e2 = graph.getEdge(v1, v2);
+				LJEdge e3 = graph.getEdge(v1, v3);
+				if(e2 != null && e3 != null)
+				{
+					if (e1.getIndex()<e2.getIndex() && e1.getIndex()<e3.getIndex())
+					{
+						Triangle new_tri = new Triangle(e1, e2, e3);
+						this.all_triangles.add(new_tri);
+						e1.getTriangles().add(new_tri);
+						e2.getTriangles().add(new_tri);
+						e3.getTriangles().add(new_tri);
+					}
+				}
+				
+			}
 		}
 	}
 	
