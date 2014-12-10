@@ -11,13 +11,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 public class Main {
 
 	//The main function running the algorithm.
-	public static void main(String[] args) throws Exception
-	{
-		new Main().main4();
-				
-	}
-	
-	public void main1() throws IOException 
+/*	public static void main1(String[] args) throws IOException
 	{
 		String filename = "TrG.txt";
 		
@@ -30,7 +24,7 @@ public class Main {
 			
 			g.ReadGraph(filename,true);
 			g.generateGraph(rate/10.0);
-			SimpleWeightedGraph<String,LJEdge>  graph = g.getGraph();
+			SimpleWeightedGraph<String, LJEdge>  graph = g.getGraph();
 			for(LJEdge e : graph.edgeSet())
 			{
 				output.println(graph.getEdgeSource(e)+" "+graph.getEdgeTarget(e)+" "+graph.getEdgeWeight(e));
@@ -39,71 +33,71 @@ public class Main {
 			
 			output.close();
 		}
-	}
+				
+	}*/
 	
-	public void main2() throws IOException
+	public static void main(String[] args) throws Exception
 	{
 		String filename = "TrG.txt";
-		
-		int n = 3;
-		for(int j = 7; j <= 9; j++)
-		{
-			Graph g = new Graph();
-			String wFilename = "TwG_"+j+"0.txt";
-			File f = new File(wFilename);
-			PrintWriter output = new PrintWriter(new FileWriter(f,false));
-			
-			g.ReadGraph(filename,true);
-			g.generateGraph2(n, 6);
-			SimpleWeightedGraph<String,LJEdge>  graph = g.getGraph();
-			for(LJEdge e : graph.edgeSet())
-			{
-//				System.out.println(graph.getEdgeSource(e)+" "+graph.getEdgeTarget(e)+" "+graph.getEdgeWeight(e));
-				output.println(graph.getEdgeSource(e)+" "+graph.getEdgeTarget(e)+" "+graph.getEdgeWeight(e));
-				output.flush();
-			}
-			
-			output.close();
-			n += 2;
-		}
-	}
-	
-	public void main3() throws IOException  // test triangles
-	{
-		String filename = "test_graph.txt";
 		Graph g = new Graph();
 		g.ReadGraph(filename, true);
 		g.findTriangles();
-		g.exportTriangles();
-		g.importTriangles();
-		System.out.println("All triangles: ");
-		for(Triangle tri : g.all_triangles)
-		{
-			System.out.println(tri);
-		}
-		System.out.println();
+		System.out.println(g.all_triangles.size());
+		g.generateWeight(0.9);
 		
-		System.out.println("All edges and triangles they belong to: ");
-		for(LJEdge e : g.graph.edgeSet())
+/*		String wFilename = "Weight0.1.txt";
+		File f = new File(wFilename);
+		PrintWriter output = new PrintWriter(new FileWriter(f,false));
+		
+		SimpleWeightedGraph<String, LJEdge>  graph = g.getGraph();
+		for(LJEdge e : graph.edgeSet())
+		{
+			output.println(graph.getEdgeSource(e)+" "+graph.getEdgeTarget(e)+" "+graph.getEdgeWeight(e));
+			output.flush();
+		}
+		
+		output.close();*/
+		System.out.println(g.getBalanceRatio());
+		
+		
+		String clicName = "clique1.txt";
+		Graph c = new Graph();
+		c.ReadGraph(clicName, true);
+		c.findTriangles();
+		c.generateClique(0.5);
+		System.out.println(c.getBalanceRatio());
+		
+		g.addClique(c, 0.2);
+		
+		int iter = g.stabilize();
+		
+		System.out.println(iter);
+		
+		
+		/*String filename = "Weight.txt";
+		Graph g = new Graph();
+		g.ReadGraph(filename, false);
+		g.findTriangles();*/
+		
+		
+		
+		
+		
+		
+		
+		/*for(Triangle tri : g.all_triangles)
+		{
+			System.out.println(tri.toString());
+		}*/
+		
+		/*for(LJEdge e : g.graph.edgeSet())
 		{
 			System.out.println(e+" belongs to:");
 			for(Triangle tri : e.getTriangles())
 			{
-				System.out.println(tri);
+				System.out.println(tri.toString());
 			}
-		}
-	}
-	
-	public void main4() throws Exception  // test graphDiff
-	{
-		String filename1 = "test_graph.txt";
-		Graph g1 = new Graph();
-		g1.ReadGraph(filename1, false);
-		String filename2 = "test_graph2.txt";
-		Graph g2 = new Graph();
-		g2.ReadGraph(filename2, false);
-		System.out.print("The average difference between g1 and g2 is: ");
-		System.out.println(Graph.graphDiff(g1, g2));
+		}*/
 	}
 		
 }

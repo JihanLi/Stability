@@ -6,12 +6,16 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 
 public class LJEdge extends DefaultWeightedEdge
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ArrayList<Triangle> triangles = new ArrayList<Triangle>();
 	private int index = 0;
+	private ArrayList<Float> property = new ArrayList<Float>();
 	
 	public LJEdge() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	public LJEdge(int index) {
@@ -21,9 +25,9 @@ public class LJEdge extends DefaultWeightedEdge
 
 	@Override
 	public double getWeight() {
-		// TODO Auto-generated method stub
 		return super.getWeight();
 	}
+	
 
 	public int getIndex() {
 		return index;
@@ -41,5 +45,34 @@ public class LJEdge extends DefaultWeightedEdge
 		this.triangles = triangles;
 	}
 	
+	public ArrayList<Float> getProperty() {
+		return property;
+	}
 	
+	public void setProperty(ArrayList<Float> p) {
+		this.property = p;
+	}
+	
+	public void computeProperty() {
+		for(int i=0;i<4;i++)
+		{
+			property.add((float) 0);
+		}
+		
+		for(Triangle t : triangles)
+		{
+			property.set(t.getNegNum(), property.get(t.getNegNum())+1);
+		}
+				
+	}
+	
+	@Override
+	public Object clone()
+	{
+		Object cloned = super.clone();
+		LJEdge clonedEdge = (LJEdge) cloned;
+		clonedEdge.setIndex(index);
+		
+		return cloned;
+	}
 }

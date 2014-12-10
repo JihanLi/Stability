@@ -3,32 +3,26 @@ package Graph;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 
+import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 public class Graph {
 	
 	public SimpleWeightedGraph<String, LJEdge>  graph = new SimpleWeightedGraph<String, LJEdge>(LJEdge.class); 
+	public SimpleWeightedGraph<String, LJEdge>  originalGraph = new SimpleWeightedGraph<String, LJEdge>(LJEdge.class);
 	private HashSet<String> VertexSet1 = new HashSet<String>();
 	private HashSet<String> VertexSet2 = new HashSet<String>();
-	private ArrayList<HashSet<String>> nodeSets = new ArrayList<HashSet<String>>();
 	public ArrayList<Triangle> all_triangles = new ArrayList<Triangle>();
+    private int curr_index = 0;
 	
-	public static void main(String[] args)
-	{
-		Graph g = new Graph();
-		g.generateGraph2(31, 5);
-	}
 	
 	//Read the data into the graph.
 	public void ReadGraph(String filename, boolean training) throws IOException
@@ -42,32 +36,34 @@ public class Graph {
 		}
         BufferedReader br = new BufferedReader(reader);
         String line = "";
-        int curr_index = 0;
         
         if(training == true)
         {
-	        try
-	        {
-				while((line = br.readLine()) != null)
-				{
-					String[] nodes= line.split(" ");
-					if(nodes.length < 2)
-						continue;
-					if(!graph.containsVertex(nodes[0]))
-	       		 	{
-	       			 	graph.addVertex(nodes[0]);
-	       		 	}
-	       		 	if(!graph.containsVertex(nodes[1]))
-	       		 	{
-	       		 		graph.addVertex(nodes[1]);
-	       		 	}
-	       		 	if(!graph.containsEdge(nodes[0], nodes[1]) && !(nodes[0].equals(nodes[1])))
-	       		 	{
-	       		 		LJEdge new_edge = new LJEdge(curr_index);
-	       		 		curr_index++;
-	       		 		graph.addEdge(nodes[0], nodes[1], new_edge);
-	       		 	}				
-				}
+	        try {
+					while((line = br.readLine()) != null)
+					{
+						String[] nodes= line.split(" ");
+						if(nodes.length < 2)
+							continue;
+						if(!graph.containsVertex(nodes[0]))
+		       		 	{
+		       			 	graph.addVertex(nodes[0]);
+		       			 	originalGraph.addVertex(nodes[0]);
+		       		 	}
+		       		 	if(!graph.containsVertex(nodes[1]))
+		       		 	{
+		       		 		graph.addVertex(nodes[1]);
+		       		 		originalGraph.addVertex(nodes[1]);
+		       		 	}
+		       		 	if(!graph.containsEdge(nodes[0], nodes[1]) && !(nodes[0].equals(nodes[1])))
+		       		 	{
+		       		 		LJEdge new_edge = new LJEdge(curr_index);
+		       		 		LJEdge new_edge2 = new LJEdge(curr_index);
+		       		 		curr_index++;
+		       		 		graph.addEdge(nodes[0], nodes[1], new_edge);
+		       		 		originalGraph.addEdge(nodes[0], nodes[1], new_edge2);
+		       		 	}				
+					}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}        	
@@ -83,15 +79,22 @@ public class Graph {
 						if(!graph.containsVertex(nodes[0]))
 		       		 	{
 		       			 	graph.addVertex(nodes[0]);
+		       			 	originalGraph.addVertex(nodes[0]);
 		       		 	}
 		       		 	if(!graph.containsVertex(nodes[1]))
 		       		 	{
 		       		 		graph.addVertex(nodes[1]);
+		       		 		originalGraph.addVertex(nodes[1]);
 		       		 	}
 		       		 	if(!graph.containsEdge(nodes[0], nodes[1]) && !(nodes[0].equals(nodes[1])))
 		       		 	{
-		       		 		graph.addEdge(nodes[0], nodes[1]);
+		       		 		LJEdge new_edge = new LJEdge(curr_index);
+		       		 		LJEdge new_edge2 = new LJEdge(curr_index);
+		       		 		curr_index++;
+		       		 		graph.addEdge(nodes[0], nodes[1], new_edge);
 		       		 		graph.setEdgeWeight(graph.getEdge(nodes[0], nodes[1]), Double.parseDouble(nodes[2]));
+		       		 		originalGraph.addEdge(nodes[0], nodes[1], new_edge2);
+		       		 		originalGraph.setEdgeWeight(originalGraph.getEdge(nodes[0], nodes[1]), Double.parseDouble(nodes[2]));
 		       		 	}				
 					}
 			} catch (Exception e) {
@@ -112,10 +115,10 @@ public class Graph {
 		this.graph = g;
 	}
 	
-	public void generateGraph(double ratio)
+/*	public void generateGraph(double ratio)
 	{
 		Random rand = new Random();
-		if(ratio == 1)  // if is all pos
+		if(ratio == 1)
 		{
 			for(LJEdge e : graph.edgeSet())
 			{
@@ -131,7 +134,7 @@ public class Graph {
 		{
 			int numVertex = (int) (graph.vertexSet().size()*(1+ratio)/2);
 			int i = 0;
-			while(i < numVertex)  // add 
+			while(i < numVertex)
 			{
 				Integer	ram = (int)(Math.random()*graph.vertexSet().size());
 				String ras = ram.toString();
@@ -148,7 +151,6 @@ public class Graph {
 					VertexSet2.add(v);
 				}
 			}
-			
 		}
 		
 		for(LJEdge e : graph.edgeSet())
@@ -156,19 +158,19 @@ public class Graph {
 			String v1 = graph.getEdgeSource(e);
 			String v2 = graph.getEdgeTarget(e);
 
-			if(VertexSet1.contains(v1) && VertexSet1.contains(v2))  // v1 and v2 belongs to VertexSet1
+			if(VertexSet1.contains(v1) && VertexSet1.contains(v2))
 			{
 				double weight;
 				double pos = 0;
 				double neg = 0;
-				for(LJEdge ev1 : graph.edgesOf(v1))  // edges of v1
+				for(LJEdge ev1 : graph.edgesOf(v1))
 				{
-					String source = graph.getEdgeSource(ev1);  // neighbor of v1
+					String source = graph.getEdgeSource(ev1);
 					if(source.equals(v1))
 					{
 						source = graph.getEdgeTarget(ev1);
 					}
-					if(VertexSet1.contains(source))  // v1 and neighbor belongs to same set
+					if(VertexSet1.contains(source))
 					{
 						pos++;
 					}
@@ -306,168 +308,126 @@ public class Graph {
 			}
 		}
 		
-	}
+	}*/
 	
-	public void generateGraph2(int n, int delta)  // the whole graph can be divided into n subgraph with delta 
+/*	public void generateGraph2(double ratio)
 	{
-		Random rand = new Random();
-		if(n == 1)  // if is all pos
+		for(Triangle tri : all_triangles)
 		{
-			for(LJEdge e : graph.edgeSet())
+			double ram = Math.random();
+			if(ram < 0.7*ratio && ram >= 0)
 			{
-				double weight = rand.nextGaussian()/6+0.5;
-				while(weight <= 0 || weight > 1)
+				graph.setEdgeWeight(tri.getEdge1(),tri.getEdge1().getWeight()+0.01);
+				graph.setEdgeWeight(tri.getEdge2(),tri.getEdge2().getWeight()+0.01);
+				graph.setEdgeWeight(tri.getEdge3(),tri.getEdge3().getWeight()+0.01);
+			}
+			else if(ram < ratio && ram >= 0.7*ratio)
+			{
+				int ran = (int) Math.floor(Math.random()*3);
+				if(ran == 0)
 				{
-					weight = rand.nextGaussian()/6+0.5;
+					graph.setEdgeWeight(tri.getEdge1(),tri.getEdge1().getWeight()+0.01);
+					graph.setEdgeWeight(tri.getEdge2(),tri.getEdge2().getWeight()-0.01);
+					graph.setEdgeWeight(tri.getEdge3(),tri.getEdge3().getWeight()-0.01);
 				}
-				graph.setEdgeWeight(e, weight);
+				else if(ran == 1)
+				{
+					graph.setEdgeWeight(tri.getEdge1(),tri.getEdge1().getWeight()-0.01);
+					graph.setEdgeWeight(tri.getEdge2(),tri.getEdge2().getWeight()+0.01);
+					graph.setEdgeWeight(tri.getEdge3(),tri.getEdge3().getWeight()-0.01);
+				}
+				else if(ran == 2)
+				{
+					graph.setEdgeWeight(tri.getEdge1(),tri.getEdge1().getWeight()-0.01);
+					graph.setEdgeWeight(tri.getEdge2(),tri.getEdge2().getWeight()-0.01);
+					graph.setEdgeWeight(tri.getEdge3(),tri.getEdge3().getWeight()+0.01);
+				}
+			}
+			else if(ram < 0.5*ratio+0.5 && ram >= ratio)
+			{
+				int ran = (int) Math.floor(Math.random()*3);
+				if(ran == 0)
+				{
+					graph.setEdgeWeight(tri.getEdge1(),tri.getEdge1().getWeight()-0.01);
+					graph.setEdgeWeight(tri.getEdge2(),tri.getEdge2().getWeight()+0.01);
+					graph.setEdgeWeight(tri.getEdge3(),tri.getEdge3().getWeight()+0.01);
+				}
+				else if(ran == 1)
+				{
+					graph.setEdgeWeight(tri.getEdge1(),tri.getEdge1().getWeight()+0.01);
+					graph.setEdgeWeight(tri.getEdge2(),tri.getEdge2().getWeight()-0.01);
+					graph.setEdgeWeight(tri.getEdge3(),tri.getEdge3().getWeight()+0.01);
+				}
+				else if(ran == 2)
+				{
+					graph.setEdgeWeight(tri.getEdge1(),tri.getEdge1().getWeight()+0.01);
+					graph.setEdgeWeight(tri.getEdge2(),tri.getEdge2().getWeight()+0.01);
+					graph.setEdgeWeight(tri.getEdge3(),tri.getEdge3().getWeight()-0.01);
+				}
+			}
+			else if(ram >= 0.5*ratio+0.5 && ram < 1)
+			{
+				graph.setEdgeWeight(tri.getEdge1(),tri.getEdge1().getWeight()-0.01);
+				graph.setEdgeWeight(tri.getEdge2(),tri.getEdge2().getWeight()-0.01);
+				graph.setEdgeWeight(tri.getEdge3(),tri.getEdge3().getWeight()-0.01);
+			}
+			
+		}
+		
+	}
+
+	*/
+
+	public void generateClique(double ratio)
+	{
+		int numVertex = (int) (graph.vertexSet().size()*(1+ratio)/2);
+		HashSet<String> ver1 = new HashSet<String>();
+		HashSet<String> ver2 = new HashSet<String>();
+		
+		int i = 0;
+		while(i < numVertex)
+		{
+			int	ram = (int)(Math.random()*graph.vertexSet().size());
+			String ras = Integer.toString(ram);
+			if(!ver1.contains(ras))
+			{
+				ver1.add(ras);
+				i++;
 			}
 		}
-		else
+		for(String v : graph.vertexSet())
 		{
-			if(n%2 == 0)
+			if(!ver1.contains(v))
 			{
-				System.out.println("n has to an odd number!");
-				return;
+				ver2.add(v);
 			}
-			int graph_size = (int) (graph.vertexSet().size());
-//			int graph_size = 1300;
-			int huge1 = graph_size*1/2;
-			int huge2 = graph_size/30;
-			graph_size = graph_size-huge1-huge2;
-			int avg_num = graph_size/(n-2);
-			int rest = graph_size-avg_num*(n-2);
-			int half = (n-2)/2;
-			ArrayList<Integer> node_num = new ArrayList<Integer>();
-			ArrayList<String> allnodes = new ArrayList<String>();
-			HashMap<String, Integer> node2set = new HashMap<String, Integer>();
-			
-// 			// arrage num of nodes for each set
-// 			for(int i=half; i>=(-1)*half; i--)
-// 				node_num.add(i*delta+avg_num);
-// 			int tmp = node_num.get(0);
-// 			node_num.set(0, tmp+rest);
-// 			node_num.add(huge1);
-// 			node_num.add(huge2);
-// //			for(int e:node_num)
-// //				System.out.println(e);
-			
-			
-			
-			// shuffle the nodes
-			for(String node:graph.vertexSet())
-				allnodes.add(node);
-			Collections.shuffle(allnodes);
-			
-			// add node to set
-			int count=0;
-			for(int i=0; i<n; i++)
+		}
+		
+		for(LJEdge e : graph.edgeSet())
+		{
+			String v1 = graph.getEdgeSource(e);
+			String v2 = graph.getEdgeTarget(e);
+
+			if((ver1.contains(v1) && ver1.contains(v2)) || (ver2.contains(v1) && ver2.contains(v2)))
 			{
-				HashSet<String>set = new HashSet<String>();
-				int size = node_num.get(i);
-				for(int j=0; j<size; j++)
-				{
-					String node = allnodes.get(count+j);
-					set.add(node);
-					node2set.put(node, i);
-				}
-				nodeSets.add(set);
-				count += size;
+				graph.setEdgeWeight(e, 1);
 			}
-			
-//			for(HashSet<String> set:nodeSets)
-//			{
-//				System.out.println(set.size());
-//			}
-			int pos_count = 0;
-			for(LJEdge e : graph.edgeSet())
+			else
 			{
-				String v1 = graph.getEdgeSource(e);
-				String v2 = graph.getEdgeTarget(e);
-				int set1_index = node2set.get(v1);
-				int set2_index = node2set.get(v2);
-				
-				if (set1_index==set2_index)  // belongs to same set
-				{
-					double weight;
-					double pos = 0;
-					double neg = 0;
-					for(LJEdge ev1 : graph.edgesOf(v1))  // edges of v1
-					{
-						String source = graph.getEdgeSource(ev1);  // neighbor of v1
-						if(source.equals(v1))
-							source = graph.getEdgeTarget(ev1);
-						if(nodeSets.get(set1_index).contains(source))  // v1 and neighbor belongs to same set
-							pos++;
-						else
-							neg++;
-					}
-					for(LJEdge ev2 : graph.edgesOf(v2))  // edges of v2
-					{
-						String source = graph.getEdgeSource(ev2);  // neighbor of v2
-						if(source.equals(v2))
-							source = graph.getEdgeTarget(ev2);
-						if(nodeSets.get(set2_index).contains(source))  // v2 and neighbor belongs to same set
-							pos++;
-						else
-							neg++;
-					}
-					weight = pos/(pos+neg);
-					graph.setEdgeWeight(e, weight);
-					pos_count += 1;
-				}
-				else  // belongs to diff set
-				{
-					double weight;
-					double pos = 0;
-					double neg = 0;
-					for(LJEdge ev1 : graph.edgesOf(v1))
-					{
-						String source = graph.getEdgeSource(ev1);
-						if(source.equals(v1))
-							source = graph.getEdgeTarget(ev1);
-						if(nodeSets.get(set1_index).contains(source))
-						{
-							pos++;
-						}
-						else
-							neg++;
-					}
-					for(LJEdge ev2 : graph.edgesOf(v2))
-					{
-						String source = graph.getEdgeSource(ev2);
-						if(source.equals(v2))
-						{
-							source = graph.getEdgeTarget(ev2);
-						}
-						if(nodeSets.get(set2_index).contains(source))
-						{
-							pos++;
-						}
-						else
-							neg++;
-					}
-					
-					weight = -neg/(pos+neg);
-					graph.setEdgeWeight(e, weight);
-				}
+				graph.setEdgeWeight(e, -1);
 			}
-			System.out.println(pos_count);
 		}
 	}
-	
+
 	public void findTriangles()
 	{
 		int tri_index=0;
 		for(LJEdge e1 : graph.edgeSet())
 		{
-//			System.out.println(e1);
+			String v2 = graph.getEdgeSource(e1);
+			String v3 = graph.getEdgeTarget(e1);
 			for(String v1 : graph.vertexSet())
 			{
-				String v2 = graph.getEdgeSource(e1);
-				String v3 = graph.getEdgeTarget(e1);
-//				if(v2.equals(v1))
-//					v2 = graph.getEdgeTarget(e1);
 				LJEdge e2 = graph.getEdge(v1, v2);
 				LJEdge e3 = graph.getEdge(v1, v3);
 				if(e2 != null && e3 != null)
@@ -485,6 +445,340 @@ public class Graph {
 				
 			}
 		}
+	}
+	
+	public void generateWeight(double ratio)
+	{
+		for(LJEdge e : graph.edgeSet())
+		{
+			double ram = Math.random()-0.5;
+			if(ram > 0)
+			{
+				graph.setEdgeWeight(e,1);
+				originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(e), graph.getEdgeTarget(e)),1);
+			}
+			else
+			{
+				graph.setEdgeWeight(e,-1);
+				originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(e), graph.getEdgeTarget(e)),-1);
+			}
+		}
+		for(Triangle tri : all_triangles)
+		{
+			double ram = Math.random();
+			if(ram < 0.9*ratio && ram >= 0)
+			{
+				graph.setEdgeWeight(tri.getEdge1(),1);
+				graph.setEdgeWeight(tri.getEdge2(),1);
+				graph.setEdgeWeight(tri.getEdge3(),1);
+				
+				originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge1()), graph.getEdgeTarget(tri.getEdge1())),1);
+				originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge2()), graph.getEdgeTarget(tri.getEdge2())),1);
+				originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge3()), graph.getEdgeTarget(tri.getEdge3())),1);
+			}
+			else if(ram < ratio && ram >= 0.9*ratio)
+			{
+				int ran = (int) Math.floor(Math.random()*3);
+				if(ran == 0)
+				{
+					graph.setEdgeWeight(tri.getEdge1(),1);
+					graph.setEdgeWeight(tri.getEdge2(),-1);
+					graph.setEdgeWeight(tri.getEdge3(),-1);
+					
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge1()), graph.getEdgeTarget(tri.getEdge1())),1);
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge2()), graph.getEdgeTarget(tri.getEdge2())),-1);
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge3()), graph.getEdgeTarget(tri.getEdge3())),-1);
+				}
+				else if(ran == 1)
+				{
+					graph.setEdgeWeight(tri.getEdge1(),-1);
+					graph.setEdgeWeight(tri.getEdge2(),1);
+					graph.setEdgeWeight(tri.getEdge3(),-1);
+					
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge1()), graph.getEdgeTarget(tri.getEdge1())),-1);
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge2()), graph.getEdgeTarget(tri.getEdge2())),1);
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge3()), graph.getEdgeTarget(tri.getEdge3())),-1);
+				}
+				else if(ran == 2)
+				{
+					graph.setEdgeWeight(tri.getEdge1(),-1);
+					graph.setEdgeWeight(tri.getEdge2(),-1);
+					graph.setEdgeWeight(tri.getEdge3(),1);
+					
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge1()), graph.getEdgeTarget(tri.getEdge1())),-1);
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge2()), graph.getEdgeTarget(tri.getEdge2())),-1);
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge3()), graph.getEdgeTarget(tri.getEdge3())),1);
+				}
+			}
+			else if(ram < 0.3*ratio+0.7 && ram >= ratio)
+			{
+				int ran = (int) Math.floor(Math.random()*3);
+				if(ran == 0)
+				{
+					graph.setEdgeWeight(tri.getEdge1(),-1);
+					graph.setEdgeWeight(tri.getEdge2(),1);
+					graph.setEdgeWeight(tri.getEdge3(),1);
+					
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge1()), graph.getEdgeTarget(tri.getEdge1())),-1);
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge2()), graph.getEdgeTarget(tri.getEdge2())),1);
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge3()), graph.getEdgeTarget(tri.getEdge3())),1);
+				}
+				else if(ran == 1)
+				{
+					graph.setEdgeWeight(tri.getEdge1(),1);
+					graph.setEdgeWeight(tri.getEdge2(),-1);
+					graph.setEdgeWeight(tri.getEdge3(),1);
+					
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge1()), graph.getEdgeTarget(tri.getEdge1())),1);
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge2()), graph.getEdgeTarget(tri.getEdge2())),-1);
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge3()), graph.getEdgeTarget(tri.getEdge3())),1);
+				}
+				else if(ran == 2)
+				{
+					graph.setEdgeWeight(tri.getEdge1(),1);
+					graph.setEdgeWeight(tri.getEdge2(),1);
+					graph.setEdgeWeight(tri.getEdge3(),-1);
+					
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge1()), graph.getEdgeTarget(tri.getEdge1())),1);
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge2()), graph.getEdgeTarget(tri.getEdge2())),1);
+					originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge3()), graph.getEdgeTarget(tri.getEdge3())),-1);
+				}
+			}
+			else if(ram >= 0.3*ratio+0.7 && ram < 1)
+			{
+				graph.setEdgeWeight(tri.getEdge1(),-1);
+				graph.setEdgeWeight(tri.getEdge2(),-1);
+				graph.setEdgeWeight(tri.getEdge3(),-1);
+				
+				originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge1()), graph.getEdgeTarget(tri.getEdge1())),-1);
+				originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge2()), graph.getEdgeTarget(tri.getEdge2())),-1);
+				originalGraph.setEdgeWeight(originalGraph.getEdge(graph.getEdgeSource(tri.getEdge3()), graph.getEdgeTarget(tri.getEdge3())),-1);
+			}
+			
+		}
+		
+/*		for(LJEdge e : graph.edgeSet())
+		{
+			String v1 = graph.getEdgeSource(e);
+			String v2 = graph.getEdgeTarget(e);
+			
+			double weight;
+			double pos = 0;
+			double neg = 0;
+			double total = 0;
+			
+			for(LJEdge ev1 : graph.edgesOf(v1))
+			{
+				String source = graph.getEdgeSource(ev1);
+				if(source.equals(v1))
+				{
+					source = graph.getEdgeTarget(ev1);
+				}
+				
+				if(!source.equals(v2))
+				{
+					if(graph.containsEdge(source,v2)) 
+					{
+						double w1 = graph.getEdgeWeight(ev1);
+						double w2 = graph.getEdgeWeight(graph.getEdge(source, v2));
+						pos += w1*w2;
+					}
+				}
+			}*/
+
+			/*if(graph.getEdgeWeight(e) > 0)
+			{
+				
+				for(LJEdge ev1 : graph.edgesOf(v1))
+				{
+					String source = graph.getEdgeSource(ev1);
+					if(source.equals(v1))
+					{
+						source = graph.getEdgeTarget(ev1);
+					}
+					if(!source.equals(v2))
+					{
+						if(graph.containsEdge(source,v2)) //if have common friends or common enemies, the weight will be more positive.
+						{
+							double w1 = graph.getEdgeWeight(ev1);
+							double w2 = graph.getEdgeWeight(graph.getEdge(source, v2));
+							if((w1 > 0 && w2 > 0) || (w1 < 0 && w2 < 0))
+							{
+								pos += 1;
+							}
+							total++;
+						}	
+					}
+				}
+				if(pos != 0)
+				{
+					weight = pos/total;
+					graph.setEdgeWeight(e, weight);
+				}
+			}
+			
+			if(graph.getEdgeWeight(e) < 0)
+			{
+				for(LJEdge ev1 : graph.edgesOf(v1))
+				{
+					String source = graph.getEdgeSource(ev1);
+					if(source.equals(v1))
+					{
+						source = graph.getEdgeTarget(ev1);
+					}
+					
+					if(!source.equals(v2))
+					{
+						if(graph.containsEdge(source,v2))  //if have complemented friend and enemy, the weight will be more negative.
+						{
+							double w1 = graph.getEdgeWeight(ev1);
+							double w2 = graph.getEdgeWeight(graph.getEdge(source, v2));
+							if((w1 < 0 && w2 > 0) || (w1 > 0 && w2 < 0))
+							{
+								neg += 1;
+							}
+							total++;
+						}	
+					}
+				}
+				if(neg != 0)
+				{
+					weight = -neg/total;
+					graph.setEdgeWeight(e, weight);
+				}
+			}*/
+			
+		//}
+		
+		
+	}
+
+	public int stabilize() throws Exception
+	{
+		final int MAXITER = 100;
+		final double THRESHOLD = 0.001;
+		
+		int i = 0;
+		double diff1 = 1;
+		double diff2 = 0;
+		String filename = "diff.txt";
+		File f = new File(filename);
+		PrintWriter output = new PrintWriter(new FileWriter(f,false));
+		double diff = Math.abs(diff1-diff2);
+		
+		while (i < MAXITER && diff > THRESHOLD)
+		{
+			for (Triangle tri : all_triangles)
+			{
+				tri.calNegNum();
+				if ((tri.getNegNum() == 1) || (tri.getNegNum() == 3))
+				{
+					int ram = (int)(Math.random()*3);
+					if(ram == 0)
+					{
+						graph.setEdgeWeight(tri.getEdge1(), -tri.getEdge1().getWeight());
+					}
+					else if(ram == 1)
+					{
+						graph.setEdgeWeight(tri.getEdge2(), -tri.getEdge2().getWeight());
+					}
+					else
+					{
+						graph.setEdgeWeight(tri.getEdge3(), -tri.getEdge3().getWeight());
+					}
+				}	
+			}
+			
+			diff1 = diff2;
+			diff2 = graphDiff(originalGraph, graph);
+			diff = Math.abs(diff1-diff2);
+			output.println(diff2);
+			output.flush();
+			i++;
+		}
+		output.close();
+		
+		return i;
+		
+	}
+	
+	public void addClique(Graph clique, double d)
+	{
+		int size1 = graph.vertexSet().size();
+		int size2 = clique.getGraph().vertexSet().size();
+		int total = (int)d*size1*size2;
+		int i = 0;
+		
+		for(LJEdge edge : clique.getGraph().edgeSet())
+		{
+			int n = Integer.parseInt(clique.getGraph().getEdgeSource(edge))+size1-1;
+			String nodes1 = Integer.toString(n);
+			n = Integer.parseInt(clique.getGraph().getEdgeTarget(edge))+size1-1;
+			String nodes2 = Integer.toString(n);
+			double weight = clique.getGraph().getEdgeWeight(edge);
+			
+			if(!graph.containsVertex(nodes1))
+   		 	{
+   			 	graph.addVertex(nodes1);
+   		 	}
+   		 	if(!graph.containsVertex(nodes2))
+   		 	{
+   		 		graph.addVertex(nodes2);
+   		 	}
+   		 	if(!graph.containsEdge(nodes1, nodes2) && !(nodes1.equals(nodes2)))
+   		 	{
+   		 		LJEdge new_edge = new LJEdge(curr_index);
+   		 		curr_index++;
+   		 		graph.addEdge(nodes1, nodes2, new_edge);
+   		 		graph.setEdgeWeight(graph.getEdge(nodes1, nodes2), weight);
+   		 	}				
+		}
+		
+		while(i < total)
+		{
+			String node1 = Double.toString(Math.random()*size2+size1);
+			String node2 = Double.toString(Math.random()*size1);
+			double weight;
+			
+			if(!graph.containsEdge(node1, node2))
+   		 	{
+				double rand = Math.random()-0.5;
+				if(rand < 0)
+				{
+					weight = -1;
+				}
+				else
+				{
+					weight = 1;
+				}
+   		 		LJEdge new_edge = new LJEdge(curr_index);
+   		 		curr_index++;
+   		 		graph.addEdge(node1, node2, new_edge);
+   		 		graph.setEdgeWeight(graph.getEdge(node1, node2), weight);
+   		 		i++;
+   		 	}		
+			
+		}
+		
+	}
+
+	public double getBalanceRatio() 
+	{
+		int balance = 0;
+		int inbalance = 0;
+		double ratio = 0;
+		
+		for(Triangle tri : all_triangles)
+		{
+			tri.calNegNum();
+			if(tri.getNegNum() == 0 || tri.getNegNum() == 2)
+				balance++;
+			else
+				inbalance++;
+		}
+		
+		ratio = (double)balance/(double)(balance+inbalance);
+		return ratio;
 	}
 	
 	public void exportTriangles() throws IOException
@@ -521,7 +815,6 @@ public class Graph {
         BufferedReader tri_br = new BufferedReader(new InputStreamReader(new FileInputStream(tri_data)));
         BufferedReader edge2tri_br = new BufferedReader(new InputStreamReader(new FileInputStream(edge2tri_data)));
         
-        // import tri
         String line = "";
         int tri_index = 0;
         while((line = tri_br.readLine()) != null)
@@ -577,43 +870,24 @@ public class Graph {
 	}
 	
 	// calculate the average difference of each pair of edges in g1 and g2
-	public static double graphDiff(Graph g1, Graph g2) throws Exception 
+	public static double graphDiff(SimpleWeightedGraph<String, LJEdge> g1, SimpleWeightedGraph<String, LJEdge> g2) throws Exception 
 	{
 		double diff = 0;
 		
-		int edgeNum = g1.graph.edgeSet().size();
+		int edgeNum = g1.edgeSet().size();
 		
-		for(LJEdge e1 : g1.graph.edgeSet())
+		for(LJEdge e1 : g1.edgeSet())
 		{
-			String node1 = g1.graph.getEdgeSource(e1);
-			String node2 = g1.graph.getEdgeTarget(e1);
-			LJEdge e2 = g2.graph.getEdge(node1, node2);
-			if(e2==null)
-				throw new Exception("ERROR: g2 does not contain "+e1.toString());
-			diff += Math.abs(e1.getWeight()-e2.getWeight());
+			String node1 = g1.getEdgeSource(e1);
+			String node2 = g1.getEdgeTarget(e1);
+			LJEdge e2 = g2.getEdge(node1, node2);
+			if(e1.getWeight() != e2.getWeight())
+			{
+				diff++;
+			}
 		}
 		
 		return diff/edgeNum;
-	}
-	
-	public void stabilize()
-	{
-		
-	}
-	
-	public void addNode()
-	{
-		
-	}
-	
-	public void deleteNode()
-	{
-		
-	}
-	
-	public void changeWeight()
-	{
-		
 	}
 	
 }
