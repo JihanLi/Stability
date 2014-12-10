@@ -581,16 +581,6 @@ public class Graph {
 	{
 		double diff = 0;
 		
-		if(g1.graph.edgeSet().size()!=g2.graph.edgeSet().size() ||
-				g1.graph.vertexSet().size()!=g2.graph.vertexSet().size())
-		{
-			System.out.println(g1.graph.edgeSet().size());
-			System.out.println(g2.graph.edgeSet().size());
-			System.out.println(g1.graph.vertexSet().size());
-			System.out.println(g2.graph.vertexSet().size());
-			throw new Exception("ERROR: two graphs have different structure!");
-		}
-		
 		int edgeNum = g1.graph.edgeSet().size();
 		
 		for(LJEdge e1 : g1.graph.edgeSet())
