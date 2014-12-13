@@ -653,7 +653,7 @@ public class Graph {
 		
 	}
 
-	public int stabilize() throws Exception
+	public int stabilize(String filename) throws Exception
 	{
 		final int MAXITER = 100;
 		final double THRESHOLD = 0.001;
@@ -661,7 +661,6 @@ public class Graph {
 		int i = 0;
 		double diff1 = 1;
 		double diff2 = 0;
-		String filename = "diff.txt";
 		File f = new File(filename);
 		PrintWriter output = new PrintWriter(new FileWriter(f,false));
 		double diff = Math.abs(diff1-diff2);

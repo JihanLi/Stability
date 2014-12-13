@@ -9,6 +9,10 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 public class Main {
+	
+	
+	private static double balanceRatio = 0.4;
+	private static double newEdgeNumber = 0.2;
 
 	//The main function running the algorithm.
 /*	public static void main1(String[] args) throws IOException
@@ -43,7 +47,7 @@ public class Main {
 		g.ReadGraph(filename, true);
 		g.findTriangles();
 		System.out.println(g.all_triangles.size());
-		g.generateWeight(0.9);
+		g.generateWeight(balanceRatio);  //Change the balance ratio.
 		
 /*		String wFilename = "Weight0.1.txt";
 		File f = new File(wFilename);
@@ -59,19 +63,24 @@ public class Main {
 		output.close();*/
 		System.out.println(g.getBalanceRatio());
 		
-		
-		String clicName = "clique1.txt";
-		Graph c = new Graph();
-		c.ReadGraph(clicName, true);
-		c.findTriangles();
-		c.generateClique(0.5);
-		System.out.println(c.getBalanceRatio());
-		
-		g.addClique(c, 0.2);
-		
-		int iter = g.stabilize();
-		
-		System.out.println(iter);
+		for(int i = 1; i <= 10;i++)
+		{
+			String clicName = "clique"+Integer.toString(i)+".txt";
+			String diffFile = "diff_BR"+Double.toString(balanceRatio)+"_EN"
+						+Double.toString(newEdgeNumber)+"_SZ"+Integer.toString(i)+".txt";
+			
+			Graph c = new Graph();
+			c.ReadGraph(clicName, true);
+			c.findTriangles();
+			c.generateClique(0.5);  //the number of positive edges in the clique
+			System.out.println(c.getBalanceRatio());
+			
+			g.addClique(c, newEdgeNumber);    //Change the number of newly added edges between clique and the graph.
+			 
+			int iter = g.stabilize(diffFile);
+			
+			System.out.println(iter);
+		}
 		
 		
 		/*String filename = "Weight.txt";
