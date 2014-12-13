@@ -8,9 +8,19 @@ def genCompleteGraph(n):
     f.close()
 
 def main():
-    for n in xrange(100, 10000, 100):
-        print n
-        genCompleteGraph(n)
+    # for n in xrange(100, 10000, 100):
+    #     print n
+    #     genCompleteGraph(n)
+    n=4000
+    print n
+    genCompleteGraph(n)
+    n=5000
+    print n
+    genCompleteGraph(n)
+    n=9000
+    print n
+    genCompleteGraph(n)
+
 
 if __name__ == '__main__':
     main()
