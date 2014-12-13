@@ -780,10 +780,22 @@ public class Graph {
 		return ratio;
 	}
 	
-	public void exportTriangles() throws IOException
+	public void WriteGraph(String filename) throws IOException
 	{
-		File tri_data = new File("triangle_data.txt");
-		File edge2tri_data = new File("edge2tri_data.txt");
+		File f = new File(filename);
+		PrintWriter output = new PrintWriter(new FileWriter(f,false));
+		for(LJEdge e : graph.edgeSet())
+		{
+			output.println(graph.getEdgeSource(e)+" "+graph.getEdgeTarget(e)+" "+graph.getEdgeWeight(e));
+			output.flush();
+		}
+		output.close();
+	}
+	
+	public void exportTriangles(String f1, String f2) throws IOException
+	{
+		File tri_data = new File(f1);
+		File edge2tri_data = new File(f2);
 		PrintWriter tri_output = new PrintWriter(new FileWriter(tri_data,false));
 		PrintWriter edge2tri_output = new PrintWriter(new FileWriter(edge2tri_data,false));
 		
@@ -807,10 +819,10 @@ public class Graph {
 		edge2tri_output.close();
 	}
 	
-	public void importTriangles() throws IOException
+	public void importTriangles(String f1, String f2) throws IOException
 	{
-		File tri_data = new File("triangle_data.txt");
-		File edge2tri_data = new File("edge2tri_data.txt");
+		File tri_data = new File(f1);
+		File edge2tri_data = new File(f2);
         BufferedReader tri_br = new BufferedReader(new InputStreamReader(new FileInputStream(tri_data)));
         BufferedReader edge2tri_br = new BufferedReader(new InputStreamReader(new FileInputStream(edge2tri_data)));
         
