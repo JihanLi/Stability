@@ -204,6 +204,9 @@ public class Main {
 			g.generateWeight(balanceRatio);  
 			g.WriteGraph(tr3);
 			
+			System.out.println(g.all_triangles.size());
+			System.out.println(g.getBalanceRatio());	
+			
 			//Change the size of clique.
 			for(int i = 0; i < 5;i++)
 			{
@@ -213,9 +216,7 @@ public class Main {
 				g = new Graph();
 				g.ReadGraph(tr3, false);
 				g.importTriangles(tr1, tr2);
-				System.out.println(g.all_triangles.size());
-				System.out.println(g.getBalanceRatio());	
-				
+
 				String clicName = path0+File.separator+"clique"+Integer.toString(size1[i])+".txt";
 				String diffFile = path1+File.separator+"diff_BR"+br+"_SZ"+Integer.toString(size1[i])+"_EN"+en+".txt";
 				
@@ -242,8 +243,6 @@ public class Main {
 				g = new Graph();
 				g.ReadGraph(tr3, false);
 				g.importTriangles(tr1, tr2);
-				System.out.println(g.all_triangles.size());
-				System.out.println(g.getBalanceRatio());
 	
 				String clicName = path0+File.separator+"clique2.txt";
 				String diffFile = path1+File.separator+"diff_BR"+br+"_EN"+en+"_SZ2.txt";

@@ -776,7 +776,13 @@ public class Graph {
 				LJEdge e3 = graph.getEdge(v1, v3);
 				if(e2 != null && e3 != null)
 				{
-					if (e1.getIndex()<e2.getIndex() && e1.getIndex()<e3.getIndex())
+					boolean flag1 = true,flag2 = true;
+					if(newEdges.contains(e2))
+						flag1 = e1.getIndex()<e2.getIndex();
+					if(newEdges.contains(e3))
+						flag2 = e1.getIndex()<e3.getIndex();
+					
+					if (flag1 && flag2)
 					{
 						Triangle new_tri = new Triangle(e1, e2, e3, triangle_index);
 						this.all_triangles.add(new_tri);
