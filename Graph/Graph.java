@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.Vector;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -18,8 +19,8 @@ public class Graph {
 	
 	public SimpleWeightedGraph<String, LJEdge>  graph = new SimpleWeightedGraph<String, LJEdge>(LJEdge.class); 
 	public SimpleWeightedGraph<String, LJEdge>  originalGraph = new SimpleWeightedGraph<String, LJEdge>(LJEdge.class);
-	private HashSet<String> VertexSet1 = new HashSet<String>();
-	private HashSet<String> VertexSet2 = new HashSet<String>();
+/*	private HashSet<String> VertexSet1 = new HashSet<String>();
+	private HashSet<String> VertexSet2 = new HashSet<String>();*/
 	public ArrayList<Triangle> all_triangles = new ArrayList<Triangle>();
     private int curr_index = 0;
 	
@@ -421,7 +422,7 @@ public class Graph {
 
 	public void findTriangles()
 	{
-		int tri_index=0;
+		int triangle_index = 0;
 		for(LJEdge e1 : graph.edgeSet())
 		{
 			String v2 = graph.getEdgeSource(e1);
@@ -434,9 +435,9 @@ public class Graph {
 				{
 					if (e1.getIndex()<e2.getIndex() && e1.getIndex()<e3.getIndex())
 					{
-						Triangle new_tri = new Triangle(e1, e2, e3, tri_index);
+						Triangle new_tri = new Triangle(e1, e2, e3, triangle_index);
 						this.all_triangles.add(new_tri);
-						tri_index++;
+						triangle_index++;
 						e1.getTriangles().add(new_tri);
 						e2.getTriangles().add(new_tri);
 						e3.getTriangles().add(new_tri);
@@ -704,10 +705,13 @@ public class Graph {
 	//Add a clique to the graph.
 	public void addClique(Graph clique, double d)
 	{
+		int triangle_index = all_triangles.size();
 		int size1 = graph.vertexSet().size();
 		int size2 = clique.getGraph().vertexSet().size();
 		int total = (int)(d*size1*size2);
 		int i = 0;
+		
+		Vector<LJEdge> newEdges = new Vector<LJEdge>();
 		
 		for(LJEdge edge : clique.getGraph().edgeSet())
 		{
@@ -756,8 +760,33 @@ public class Graph {
    		 		graph.addEdge(node1, node2, new_edge);
    		 		graph.setEdgeWeight(graph.getEdge(node1, node2), weight);
    		 		i++;
+   		 		newEdges.add(graph.getEdge(node1, node2));
    		 	}		
 			
+		}
+		
+		for(LJEdge e1 : newEdges)
+		{
+			String v2 = graph.getEdgeSource(e1);
+			String v3 = graph.getEdgeTarget(e1);
+			for(String v1 : graph.vertexSet())
+			{
+				LJEdge e2 = graph.getEdge(v1, v2);
+				LJEdge e3 = graph.getEdge(v1, v3);
+				if(e2 != null && e3 != null)
+				{
+					if (e1.getIndex()<e2.getIndex() && e1.getIndex()<e3.getIndex())
+					{
+						Triangle new_tri = new Triangle(e1, e2, e3, triangle_index);
+						this.all_triangles.add(new_tri);
+						triangle_index++;
+						e1.getTriangles().add(new_tri);
+						e2.getTriangles().add(new_tri);
+						e3.getTriangles().add(new_tri);
+					}
+				}
+				
+			}
 		}
 		
 	}

@@ -12,7 +12,6 @@ public class LJEdge extends DefaultWeightedEdge
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Triangle> triangles = new ArrayList<Triangle>();
 	private int index = 0;
-	private ArrayList<Float> property = new ArrayList<Float>();
 	
 	public LJEdge() {
 		super();
@@ -43,27 +42,6 @@ public class LJEdge extends DefaultWeightedEdge
 
 	public void setTriangles(ArrayList<Triangle> triangles) {
 		this.triangles = triangles;
-	}
-	
-	public ArrayList<Float> getProperty() {
-		return property;
-	}
-	
-	public void setProperty(ArrayList<Float> p) {
-		this.property = p;
-	}
-	
-	public void computeProperty() {
-		for(int i=0;i<4;i++)
-		{
-			property.add((float) 0);
-		}
-		
-		for(Triangle t : triangles)
-		{
-			property.set(t.getNegNum(), property.get(t.getNegNum())+1);
-		}
-				
 	}
 	
 	@Override
