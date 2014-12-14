@@ -735,6 +735,7 @@ public class Graph {
    		 		curr_index++;
    		 		graph.addEdge(nodes1, nodes2, new_edge);
    		 		graph.setEdgeWeight(graph.getEdge(nodes1, nodes2), weight);
+   		 		newEdges.add(graph.getEdge(nodes1, nodes2));
    		 	}				
 		}
 		
