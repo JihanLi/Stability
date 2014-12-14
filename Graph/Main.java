@@ -57,7 +57,7 @@ public class Main {
 			g.importTriangles(tr1, tr2);
 			System.out.println(g.all_triangles.size());
 			String tr3 = path2+File.separator+"tempGraph_BR"+br+".txt";
-			g.generateWeight(balanceRatio);  //Change the balance ratio.
+			g.generateWeight(balanceRatio);
 			g.WriteGraph(tr3);
 			System.out.println(g.getBalanceRatio());	
 			
@@ -75,9 +75,9 @@ public class Main {
 				
 				Graph c = new Graph();
 				c.ReadGraph(clicName, true);
-				c.generateClique(0.5);  //the number of positive edges in the clique
+				c.generateClique(0.5);
 				
-				g.addClique(c, newEdgeNumber);    //Change the number of newly added edges between clique and the graph.
+				g.addClique(c, newEdgeNumber);
 				g.findTriangles();
 				
 				System.out.println(g.all_triangles.size());
@@ -102,10 +102,10 @@ public class Main {
 				
 				Graph c = new Graph();
 				c.ReadGraph(clicName, true);
-				c.generateClique(0.5);  //the number of positive edges in the clique
+				c.generateClique(0.5);
 	
 				
-				g.addClique(c, newEdgeNumber);    //Change the number of newly added edges between clique and the graph.
+				g.addClique(c, newEdgeNumber);
 				g.findTriangles();
 				
 				System.out.println(g.all_triangles.size());
