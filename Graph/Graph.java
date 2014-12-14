@@ -701,18 +701,19 @@ public class Graph {
 		
 	}
 	
+	//Add a clique to the graph.
 	public void addClique(Graph clique, double d)
 	{
 		int size1 = graph.vertexSet().size();
 		int size2 = clique.getGraph().vertexSet().size();
-		int total = (int)d*size1*size2;
+		int total = (int)(d*size1*size2);
 		int i = 0;
 		
 		for(LJEdge edge : clique.getGraph().edgeSet())
 		{
-			int n = Integer.parseInt(clique.getGraph().getEdgeSource(edge))+size1-1;
+			int n = Integer.parseInt(clique.getGraph().getEdgeSource(edge))+size1;
 			String nodes1 = Integer.toString(n);
-			n = Integer.parseInt(clique.getGraph().getEdgeTarget(edge))+size1-1;
+			n = Integer.parseInt(clique.getGraph().getEdgeTarget(edge))+size1;
 			String nodes2 = Integer.toString(n);
 			double weight = clique.getGraph().getEdgeWeight(edge);
 			
@@ -735,8 +736,8 @@ public class Graph {
 		
 		while(i < total)
 		{
-			String node1 = Double.toString(Math.random()*size2+size1);
-			String node2 = Double.toString(Math.random()*size1);
+			String node1 = Integer.toString((int)(Math.random()*size2)+size1);
+			String node2 = Integer.toString((int)(Math.random()*size1));
 			double weight;
 			
 			if(!graph.containsEdge(node1, node2))
