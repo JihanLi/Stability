@@ -1,0 +1,29 @@
+1. Introduction
+	1.1 problem statement
+		how to measure the susceptibility of a social network
+	1.2 why important
+		1.2.1 help to monitor and improve the stability of society, organization
+		1.2.2 understand the assimilation phenomenon of society
+		1.2.3 gain more insight into the structure and dynamics of social network
+	1.3 general ideas and assumptions
+		we considered the signed undirected graph
+		data: simulated and real
+		how we define susceptibility and balance ratio: we only consider adding new nodes
+		the variables of new clique
+		the update rules
+	1.4 problem formulation and contribution
+		describe the work in a formalized way
+		contribution
+	
+2. Related work
+	five paper
+
+3. Result
+	three claims and analysis
+
+Supplementary information
+	1. method
+		update rules in detail
+	2. future work
+
+reference
